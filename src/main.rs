@@ -41,35 +41,24 @@ fn main() {
     }
 }
 
-fn is_balanced(bracket: &str) -> String {
-    // can be improved using macro
-    let mut closing_to_opening_brackets = HashMap::new();
-    closing_to_opening_brackets.insert(')', '(');
-    closing_to_opening_brackets.insert(']', '[');
-    closing_to_opening_brackets.insert('}', '{');
-
+fn is_balanced(bracket: &str) -> &str {
     // check if the brackets string length is even number, else return "NO"
     if bracket.len() % 2 == 0 {
-        let mut start_string_chars: Vec<char> = Vec::new();
-        // find the index of the first closing bracket
+        let mut opened_brackets: Vec<char> = Vec::new();
         for (idx, ch) in bracket.char_indices() {
-            if idx > 0 && closing_to_opening_brackets.contains_key(&ch) {
-                let opening_bracket = closing_to_opening_brackets.get(&ch);
-                if start_string_chars.last().unwrap() == opening_bracket.unwrap() {
-                    start_string_chars.pop();
-                    let reviewed_bracket = start_string_chars.iter().collect::<String>() + bracket.split_at(idx + 1).1;
-                    if reviewed_bracket.is_empty() {
-                        return String::from("YES");
-                    } else {
-                        return is_balanced(&reviewed_bracket);
+            match ch {
+                '(' => opened_brackets.push(')'),
+                '[' => opened_brackets.push(']'),
+                '{' => opened_brackets.push('}'),
+                _ => {
+                    if opened_brackets.is_empty() || opened_brackets.pop().unwrap() != ch {
+                        return "NO"
                     }
-                } else {
-                    return String::from("NO");
                 }
             }
-            start_string_chars.push(ch);
         }
+        return if opened_brackets.is_empty() { "YES" } else { "NO" };
     }
 
-    String::from("NO")
+    "NO"
 }
